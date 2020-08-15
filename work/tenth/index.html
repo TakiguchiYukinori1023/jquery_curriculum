@@ -27,20 +27,51 @@
     </div>
     <script src="../../common/js/jquery.js"></script>
     <script>
+      $(function() {
+        $('.search__btn').on('click', function() { /*search__btnクラスのbuttonタグがクリックされたらイベント発生*/
+          var searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
+        $.ajax({
+          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+          type: 'GET',
+          datatype: 'json',
+          data: {
+            // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
+            keyword: searchword, /*keywordパラメーターの値に検索テキストを代入したsearchwordを指定*/
+            applicationId: '1019399324990976605',
+            booksGenreId: '001', /*検索のジャンルを本に指定*/
+            hits: '20', /*1ページあたりの表示件数を20件に指定*/
+          }
+        }).done(function(data) {
+            var searchresult = /*dataとして返ってきたItemsを変数searchresultに代入して、その内容をクラスlistsのリストに追加したい*/
+            
+            console.log(data); /*引数のdata変数の中身をコンソールに表示*/
+            var first__book__itemUrl = data.Items[0].Item.itemUrl; /*変数first__book__itemUrlに引数のdata変数の中のオブジェクトの中のキーであるItems配列のインデックス番号0の中身であるItemオブジェクトのキーであるitemUrlの値を代入*/
+            var first__book__largeImageUrl = data.Items[0].Item.largeImageUrl;
+            var first__book__title = data.Items[0].Item.title;
+            var first__book__author = data.Items[0].Item.author;
+            var first__book__publisherName = data.Items[0].Item.publisherName;
+            console.log(first__book__itemUrl);
+            console.log(first__book__largeImageUrl);
+            console.log(first__book__title);
+            console.log(first__book__author); 
+            console.log(first__book__publisherName);         
+          });
+        });
+      });
       // 楽天ブックスの総合検索APIを使って製作してください。
       // answerの挙動を良く見てね！
-      //
+      
       // 下記URLにAPIの仕様が載っているので、ブラウザで開いて参考にしてください。
       // https://webservice.rakuten.co.jp/api/bookstotalsearch/
-      //
-      //
+      
+      
       // [使うメソッド]
       // e.preventDefault イベントをキャンセルするためのメソッド。今回はaタグの遷移を無効化します。
       // on('click') onメソッドを使うことで、動的に出力される要素に対してもイベント登録が行えます。
       // $.each(配列, function functionName() {}) 配列に対しての繰り返し処理が行えます。
       // $.ajax({}) 外部ファイルやURLに対してデータをリクエストすることができます。
       // 以下は今回使う$.ajaxの基本的な形です。
-      //
+      
       // $.ajax({
       //   url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
       //   type: 'GET',
@@ -54,8 +85,8 @@
       //   // この中にデータ取得後の動きを記述していきます。
       //   console.log(data);
       // });
-      //
-      //
+      
+      
       // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
       // 取得できたらHTMLに<ul class='lists'></ul>を用意しているので、下のテンプレに沿ってデータを入れ込みましょう。
       // <li class="lists__item">
@@ -68,14 +99,14 @@
       //    </a>
       //  </div>
       // </li>
-      //
+      
       // 取得できた書籍の件数をもとに、ページャを作成しましょう
       // ページャの条件
       // ├ 「現在のページ数」と「全てのページ数」が表示されている
       // ├ 「前へ」と「次へ」のボタンがある
       // ├ 1ページ目では「前へ」に、最後のページでは「次へ」にdisabledクラスをつけて非活性（使用不能）にする
       // └ 1ページしかない場合はどちらもdisabledクラスをつけて非活性にする
-      //
+      
       // ページャのテンプレート
       // <div class="pager" data-js="pager">
       //   <div class="counter">
