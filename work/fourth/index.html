@@ -47,11 +47,11 @@
     </div>
     <script src="../../common/js/jquery.js"></script>
     <script>
-      $('.menu__list__title').hover(function() {
-        $('this').next('.menu__list__childList').slideDown();
+      $('.menu__list').children('li').hover(function() { /*menu__listクラスの子要素のliタグがホバーされている間に無名関数を実行*/
+        $('ul',this).stop().slideDown(); /*menu__listクラスのタグの子要素のulタグをアニメーションの処理を中止させてからスライドしながら表示*/
       }, 
-      function() {
-        $('this').next('.menu__List__childList').slideUp();
+      function() { /*hoverが外れた時に実行される無名関数*/
+        $('ul',this).stop().slideUp(); /*menu__listクラスのタグの子要素のulタグをアニメーションの処理を中止させてからスライドしながら非表示*/
       });
       // 今回やるのはドロップメニューです。
       // メニューをhoverすると隠れている中のメニューが表示され、メニューから離れると中のメニューが非表示されるプログラムです。

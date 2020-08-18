@@ -26,6 +26,11 @@
     <script>
       // 今回やるのはタブメニューです。
       // navの小要素であるliをクリックして、contents内の小要素であるli要素を表示させる。
+      $('.nav').find('li').click(function() { /*navクラスタグの子要素のliタグがクリックされたら無名関数を実行*/
+        var num = $(this).index(); /*num変数にクリックされたliタグの順番を代入*/
+        $('.contents').find('li').not(num).addClass('is-hidden'); /*contentsクラスのタグの子要素のliタグのnum変数以外の順番のliにis-hiddenクラスを追加*/
+        $('.contents').find('li').eq(num).removeClass('is-hidden'); /*contentsクラスのタグの子要素のliタグのnum変数の順番のliからis-hiddenクラスを取り除く*/
+      });
       // .index() 要素のindexを取得します。
       // .eq() 引数に応じたindexの要素を指定します。
       // .addClass() クラスを追加します。

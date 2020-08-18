@@ -69,16 +69,59 @@
 </div>
 <script src="../../common/js/jquery.js"></script>
 <script>
+        $(function() {
 // 第1問  id='q1'の要素の文字色を赤色にせよ。
+          $('#q1').css('color', 'red') /*idがq1のタグで囲われた文字を赤くする*/
 // 第2問  id='q2'の要素をクリックしたら背景色をピンクにせよ。
+          $('#q2').click(function() { /*idがq2のタグがクリックされたら関数が起動する*/
+            $(this).css('background-color', '#ffc0cb') /*直前で指定されたidがq2のタグの背景色を#ffc0cb色に指定*/
+          });
 // 第3問  id='q3'の要素をクリックしたら2秒かけてフェードアウトさせよ。
+          $('#q3').click(fadeOut); /*idがq3のタグがクリックされたらfadeOut関数が実行*/
+          function fadeOut() { /*fadeOut関数の定義*/
+            $(this).fadeOut(2000); /*idがq3のタグが2秒かけてフェードアウト*/
+          }
 // 第4問  id='q4'の要素をクリックしたらこの要素の前後とこの要素内の前後にテキストを挿入せよ。
+          $('#q4').click(function() { /*idがq4のタグがクリックされたら無名関数を実行*/
+            $(this).prepend('DOMの中の前') /*idがq4のタグの先頭に文字列追加*/
+                   .append('DOMの中の後')　/*idがq4のタグの末尾にに文字列追加*/
+                   .before('DOMの前')　/*idがq4のタグの前に文字列追加*/
+                   .after('DOMの後')　/*idがq4のタグの後に文字列追加*/
+          })
 // 第5問  id='q5'の要素をクリックしたらこの要素にlargeというクラスを付与せよ。
+          $('#q5').click(function() {　/*idがq5のタグがクリックされたら*/
+            $(this).addClass('large') /*idがq5のタグにlargeクラスを追加*/
+          })
 // 第6問  id='q6'の要素をクリックしたらこの要素を2秒かけてmargin-topとmargin-leftを100pxの位置に移動させよ。
+          $('#q6').click(function() { /*idがq6のタグがクリックされたら*/
+            $(this).animate({ /*idがq6のタグにアニメーションを設定*/
+              marginLeft: 100, /*左側の余白を100取る*/
+              marginTop: 100　/*上側の余白を100取る*/
+              },2000); /*2秒かけて*/
+          });
 // 第7問  id='q7'の子要素をクリックしたら、その要素のインデックス（何番目か）をconsole.log()とalert()を用いて表示させよ。
+          $('#q7').find('li').click(function() { /*idがq7のタグの子要素のliタグがクリックされたら無名関数を実行*/
+            var targetNum = $(this).index(); /*targetNum変数にクリックされたidがq7のタグの子要素のliタグの順番を代入*/
+            console.log(targetNum); /*targetNum変数の中身をコンソールに表示*/
+            alert(targetNum); /*targetNum変数の中身をダイアログで表示*/
+          });
 // 第8問  id='q8'の要素をhoverしたらlargeというクラスを付与し、hoverが外れたら、クラスを削除せよ。
+          $('#q8').hover(function() { /*idがq8のタグにhoverしたら無名関数が実行*/
+            $(this).addClass('large'); /*idがq8のタグにhoverされたらlargeクラスを追加*/
+          }, function() { /*hoverが外れたら以下の無名関数を実行*/
+            $(this).removeClass('large'); /*largeクラスを取り除く*/
+          });
 // 第9問  id='q9'の要素をクリックしたらこの要素に設定してあるdata属性をconsoleに表示せよ。
+          $('#q9').click(function() {　/*idがq9のタグがクリックされたら*/
+            var text = $(this).data('text'); /*text変数idがq9のタグのdata属性を取得し代入*/
+            console.log(text); /*text変数の中身をコンソールに表示*/
+          });
 // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
+          $('#q10').find('li').click(function() { /*idがq10のタグの子要素のliタグがクリックされたら無名関数が実行*/
+            var num = $(this).index(); /*num変数にクリックされたliの順番の数字を代入*/
+            $('#q11').find('li').eq(num).addClass('large'); /*idがq11の要素の子要素のliタグに上記のnum変数に格納された数字の順番のliタグにlargeクラスを追加*/
+          });
+        });
 </script>
 </body>
 </html>
