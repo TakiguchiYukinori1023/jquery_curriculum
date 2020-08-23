@@ -42,19 +42,32 @@
             hits: '20', /*1ページあたりの表示件数を20件に指定*/
           }
         }).done(function(data) {
-            var searchresult = /*dataとして返ってきたItemsを変数searchresultに代入して、その内容をクラスlistsのリストに追加したい*/
+            $.each(data.Items,function(index, value) { /*data変数の中のItemsキーの値である配列のループ処理*/
+              var searchresult = '<li class=' + "lists__item" + '>' +
+                                  '<div class=' + "lists__item__inner" + '>' +
+                                    '<a href=""' + 'class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
+                                      '<img src=' + data.Items[index].Item.largeImageUrl + 'class=' + 'lists__item__img' + 'alt=' + '>' +　/*largeUrlキーの値を格納*/
+                                      '<p class=' + "lists__item__detail" + '>' + '作品名：' + data.Items[index].Item.title + '</p>' +　/*titleキーの値を格納*/
+                                      '<p class=' + "lists__item__detail" + '>' + '作者名：' + data.Items[index].Item.author + '</p>' +　/*authorキーの値を格納*/
+                                      '<p class=' + "lists__item__detail" + '>' + '出版社：' + data.Items[index].Item.publisherName + '</p>' +　/*publisherNameキーの値を格納*/
+                                    '</a>' +
+                                  '</div>' +
+                                 '</li>';
+              $('.lists').append(searchresult);
+            });
+
             
             console.log(data); /*引数のdata変数の中身をコンソールに表示*/
-            var first__book__itemUrl = data.Items[0].Item.itemUrl; /*変数first__book__itemUrlに引数のdata変数の中のオブジェクトの中のキーであるItems配列のインデックス番号0の中身であるItemオブジェクトのキーであるitemUrlの値を代入*/
-            var first__book__largeImageUrl = data.Items[0].Item.largeImageUrl;
-            var first__book__title = data.Items[0].Item.title;
-            var first__book__author = data.Items[0].Item.author;
-            var first__book__publisherName = data.Items[0].Item.publisherName;
-            console.log(first__book__itemUrl);
-            console.log(first__book__largeImageUrl);
-            console.log(first__book__title);
-            console.log(first__book__author); 
-            console.log(first__book__publisherName);         
+            // var first__book__itemUrl = data.Items[0].Item.itemUrl; /*変数first__book__itemUrlに引数のdata変数の中のオブジェクトの中のキーであるItems配列のインデックス番号0の中身であるItemオブジェクトのキーであるitemUrlの値を代入*/
+            // var first__book__largeImageUrl = data.Items[0].Item.largeImageUrl;
+            // var first__book__title = data.Items[0].Item.title;
+            // var first__book__author = data.Items[0].Item.author;
+            // var first__book__publisherName = data.Items[0].Item.publisherName;
+            // console.log(first__book__itemUrl);
+            // console.log(first__book__largeImageUrl);
+            // console.log(first__book__title);
+            // console.log(first__book__author); 
+            // console.log(first__book__publisherName);         
           });
         });
       });
@@ -85,8 +98,7 @@
       //   // この中にデータ取得後の動きを記述していきます。
       //   console.log(data);
       // });
-      
-      
+    
       // $.ajaxによってデータが取得できたら、必要なデータ(作品名とか作者名とか)を取得します。
       // 取得できたらHTMLに<ul class='lists'></ul>を用意しているので、下のテンプレに沿ってデータを入れ込みましょう。
       // <li class="lists__item">
@@ -99,7 +111,8 @@
       //    </a>
       //  </div>
       // </li>
-      
+
+
       // 取得できた書籍の件数をもとに、ページャを作成しましょう
       // ページャの条件
       // ├ 「現在のページ数」と「全てのページ数」が表示されている
