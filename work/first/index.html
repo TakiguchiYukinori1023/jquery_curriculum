@@ -51,7 +51,7 @@
   </div>
   <h2 class="sub-title">Q9</h2>
   <div class="question">
-    <div class="btn" id="q9" data-text="jQuery">Q9</div>
+    <div class="btn" id="q9" data-text="jQuery" data-number="5">Q9</div>
   </div>
   <h2 class="sub-title">Q10</h2>
   <div class="question">
@@ -86,7 +86,7 @@
             $(this).prepend('DOMの中の前') /*idがq4のタグの先頭に文字列追加*/
                    .append('DOMの中の後')　/*idがq4のタグの末尾にに文字列追加*/
                    .before('DOMの前')　/*idがq4のタグの前に文字列追加*/
-                   .after('DOMの後')　/*idがq4のタグの後に文字列追加*/
+                   .after('DOMの後');　/*idがq4のタグの後に文字列追加*/
           })
 // 第5問  id='q5'の要素をクリックしたらこの要素にlargeというクラスを付与せよ。
           $('#q5').click(function() {　/*idがq5のタグがクリックされたら*/
@@ -97,7 +97,7 @@
             $(this).animate({ /*idがq6のタグにアニメーションを設定*/
               marginLeft: 100, /*左側の余白を100取る*/
               marginTop: 100　/*上側の余白を100取る*/
-              },2000); /*2秒かけて*/
+              }, 2000); /*2秒かけて*/
           });
 // 第7問  id='q7'の子要素をクリックしたら、その要素のインデックス（何番目か）をconsole.log()とalert()を用いて表示させよ。
           $('#q7').find('li').click(function() { /*idがq7のタグの子要素のliタグがクリックされたら無名関数を実行*/
@@ -113,7 +113,7 @@
           });
 // 第9問  id='q9'の要素をクリックしたらこの要素に設定してあるdata属性をconsoleに表示せよ。
           $('#q9').click(function() {　/*idがq9のタグがクリックされたら*/
-            var text = $(this).data('text'); /*text変数idがq9のタグのdata属性を取得し代入*/
+            var text = $(this).data(); /*text変数idがq9のタグのdata属性を取得し代入*/
             console.log(text); /*text変数の中身をコンソールに表示*/
           });
 // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
