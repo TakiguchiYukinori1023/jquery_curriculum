@@ -87,14 +87,14 @@
       $(function() { 
         $('.select').change(function() { /*selectクラス子要素のvalue値が変更されたら以下の無名関数を実行*/
           var value = $(this).val(); /*value変数に上記の変更されたvalue値を代入*/
-          if(value == 'all') { /*もし変数valueの中身がallだったら*/
+          if(value === 'all') { /*もし変数valueの中身がallだったら*/
             $('.list').children('li').show(); /*listクラスの子要素のliタグを全て表示*/
-          } else { /*変数vの中身がall以外なら*/
-            $('.list').children('li').each(function() { /*listクラスのタグの子要素のliに対して以下の関数のループ処理を実行*/
-              if($(this).data('category-type') == value) { /*listクラスのタグの子要素のliのデータ属性が変数valueの中身と同じなら*/
-                $(this).show(); /*listクラスのタグの子要素のliを表示*/
+          } else { /*変数valueの中身がall以外なら*/
+            $('.list').children('li').each(function(index, element) { /*listクラスのタグの子要素のliに対して以下の関数のループ処理を実行*/console.log(element);
+              if($(element).data('category-type') === value) { /*listクラスのタグの子要素のliのデータ属性が変数valueの中身と同じなら*/
+                $(element).show(); /*listクラスのタグの子要素のliを表示*/
               } else {　/*listクラスのタグの子要素のliのデータ属性が変数valueの中身と同じでなかったなら*/
-                $(this).hide(); /*listクラスのタグの子要素のliタグを隠す*/
+                $(element).hide(); /*listクラスのタグの子要素のliタグを隠す*/
               }
             })
           }
