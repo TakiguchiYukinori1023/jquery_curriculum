@@ -30,15 +30,27 @@
 
       $(function() {
         var searchword = ''; //グローバル変数
+        var pageNum = 0;
 
         $('.search__btn').on('click', function() { /*search__btnクラスのbuttonタグがクリックされたらイベント発生*/
           searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
-          console.log(searchword);
-          exeAjax();
-          pagerCreate();
+          pageNum = pageCount(); /*pageNum変数にpageCount関数*/
+          console.log(pageNum);
+          exeAjax(); /*exeAjax関数実行*/
+          pagerCreate(); /*pagerCreate関数実行*/
         });
 
-        function exeAjax() {
+        $('.btn-item').on('click', function() {
+          pageNum = pageCount();
+          exeAjax();
+        });
+
+        function pageCount() {/*ページ数カウント関数*/
+          pageNum = pageNum + 1; /*現在のpageNum変数に1を足す*/
+          return pageNum;　/*pageNum変数の中身を返す*/
+        }
+
+        function exeAjax() { /*ajax通信の関数*/
           console.log(searchword);
           $.ajax({
           url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
@@ -47,9 +59,10 @@
           data: {
             // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
             keyword: searchword, /*keywordパラメーターの値に検索テキストを代入したsearchwordを指定*/
-            applicationId: '1019399324990976605',
+            applicationId: '1019399324990976605', /*Idを指定*/
             booksGenreId: '001', /*検索のジャンルを本に指定*/
             hits: '20', /*1ページあたりの表示件数を20件に指定*/
+            page: pageNum /*ページの数を指定*/
           },
         }).done(function(data) {
             $.each(data.Items,function(index, value) { /*data変数の中のItemsキーの値である配列のループ処理*/
@@ -69,7 +82,7 @@
         };
 
         function pagerCreate() {
-          var pagecount = '<div class="pager" data-js="pager">' +
+          var pager = '<div class="pager" data-js="pager">' +
                             '<div class="counter">' +
                               '<span class="counter-current"></span>/<span class="counter-all"></span>' +
                             '</div>' +
@@ -78,7 +91,7 @@
                               '<a class="btn-item" data-js="page-next" href="">次へ</a>' +
                             '</div>' +
                           '</div>'
-              $('.lists').after(pagecount);
+              $('.lists').after(pager);
         };
       });
       // 楽天ブックスの総合検索APIを使って製作してください。
