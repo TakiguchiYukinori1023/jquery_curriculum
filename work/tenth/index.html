@@ -32,9 +32,10 @@
         var searchword = ''; //グローバル変数
 
         $('.search__btn').on('click', function() { /*search__btnクラスのbuttonタグがクリックされたらイベント発生*/
-          var searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
+          searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
           console.log(searchword);
           exeAjax();
+          pagerCreate();
         });
 
         function exeAjax() {
