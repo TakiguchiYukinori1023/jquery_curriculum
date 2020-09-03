@@ -40,9 +40,11 @@
           pagerCreate(); /*pagerCreate関数実行*/
         });
 
-        $('.btn-item').on('click', function() {
+        $("a[data-js='page-next']").on('click', function(event) {
+          event.preventDefault();
           pageNum = pageCount();
           exeAjax();
+          console.log(data);
         });
 
         function pageCount() {/*ページ数カウント関数*/
@@ -83,14 +85,14 @@
 
         function pagerCreate() {
           var pager = '<div class="pager" data-js="pager">' +
-                            '<div class="counter">' +
-                              '<span class="counter-current"></span>/<span class="counter-all"></span>' +
-                            '</div>' +
-                            '<div class="btn-wrapper">' +
-                              '<a class="btn-item" data-js="page-prev" href="">前へ</a>' +
-                              '<a class="btn-item" data-js="page-next" href="">次へ</a>' +
-                            '</div>' +
-                          '</div>'
+                        '<div class="counter">' +
+                            '<span class="counter-current"></span>/<span class="counter-all"></span>' +
+                        '</div>' +
+                        '<div class="btn-wrapper">' +
+                          '<a class="btn-item" data-js="page-prev" href="">前へ</a>' +
+                          '<a class="btn-item" data-js="page-next" href="">次へ</a>' +
+                        '</div>' +
+                      '</div>'
               $('.lists').after(pager);
         };
       });
