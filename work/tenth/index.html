@@ -41,10 +41,10 @@
         });
 
         $("a[data-js='page-next']").on('click', function(event) {
+          console.log("テスト");
           event.preventDefault();
           pageNum = pageCount();
           exeAjax();
-          console.log(data);
         });
 
         function pageCount() {/*ページ数カウント関数*/
