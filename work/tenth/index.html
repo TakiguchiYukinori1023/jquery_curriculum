@@ -37,20 +37,24 @@
           pageNum = countUp(); /*pageNum変数にpageCount関数*/
           console.log(pageNum);
           exeAjax(); /*exeAjax関数実行*/
-          pagerCreate(); /*pagerCreate関数実行*/
+          // pagerCreate(); /*pagerCreate関数実行*/
         });
 
         $(document).on('click',"a[data-js='page-next']", function(event) {
           console.log("テスト");
+          $('.lists').empty();
           event.preventDefault();
           pageNum = countUp();
+          $('.pager').remove();
           exeAjax();
         });
 
         $(document).on('click',"a[data-js='page-prev']", function(event) {
           console.log("テスト");
+          $('.lists').empty();
           event.preventDefault();
           pageNum = countDown();
+          $('.pager').remove();
           exeAjax();
         });
 
@@ -93,21 +97,38 @@
                                  '</li>';
               $('.lists').append(searchresult); /*listsクラスをセレクタとしてsearchresult変数を追加*/
             });
+            pagerCreate(data);
           });
         };
 
-        function pagerCreate() {
+        function pagerCreate(data) {
           var pager = '<div class="pager" data-js="pager">' +
                         '<div class="counter">' +
                             '<span class="counter-current">' + data.page + '</span>' + '/' + '<span class="counter-all">' + data.pageCount + '</span>' +
                         '</div>' +
                         '<div class="btn-wrapper">' +
-                          '<a class="btn-item" data-js="page-prev" href="">前へ</a>' +
+                          '<a class="btn-item disabled" data-js="page-prev" href="">前へ</a>' +
                           '<a class="btn-item" data-js="page-next" href="">次へ</a>' +
                         '</div>' +
                       '</div>'
-              $('.lists').after(pager);
+          $('.lists').after(pager);
+          pagerDisabled(data);
         };
+
+        function pagerDisabled(data) { 
+          console.log(data);
+          if(data.pageCount = 1) {       
+            $(document).on("a[data-js='page-prev']").prop("disabled", true);
+            $(document).on("a[data-js='page-next']").prop("disabled", true);
+          }
+          else if(data.page = 1) {
+            $(document).on("a[data-js='page-prev']").prop("disabled", true);
+          }
+          else if(data.page = data.pageCount) {
+            $(document).on("a[data-js='page-next']").prop("disabled", true);
+          }
+        }
+
       });
       // 楽天ブックスの総合検索APIを使って製作してください。
       // answerの挙動を良く見てね！
