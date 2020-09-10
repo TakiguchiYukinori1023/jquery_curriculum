@@ -33,6 +33,8 @@
         var pageNum = 0; //グローバル変数
 
         $('.search__btn').on('click', function() { /*search__btnクラスのbuttonタグがクリックされたらイベント発生*/
+          $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
+          $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
           pageNum = countUp(); /*pageNum変数にpageCount関数*/
           console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
@@ -40,21 +42,28 @@
         });
 
         $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
-          event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-          pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-          exeAjax(); /*exeAjax関数を実行*/
+          event.preventDefault(); /*画面遷移を防ぐ*/
+          pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
+          // disabledJudge();
+          // exeAjax(); /*exeAjax関数を実行*/
         });
 
         $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
-          event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-          pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-          exeAjax();  /*exeAjax関数を実行*/
+          event.preventDefault(); /*画面遷移を防ぐ*/
+          pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
+          if ($(this).hasClass('.disabled')) {
+            ;
+          } else {
+            exeAjax();
+          }
+          // disabledJudge();
+          // exeAjax();
         });
 
         function countUp() {/*countUp関数の定義*/
@@ -96,7 +105,7 @@
                                  '</li>';
               $('.lists').append(searchresult); /*listsクラスをセレクタとしてsearchresult変数を追加*/
             });
-            pagerCreate(data);
+            pagerCreate(data); 
           });
         };
 
@@ -111,7 +120,25 @@
                         '</div>' +
                       '</div>'
           $('.lists').after(pager);
+          addDisabled(data);               
         };
+
+        function addDisabled(data) {
+          if(data.page === 1) {
+            $("a[data-js='page-prev']").addClass('disabled');
+          }
+          else if(data.page === data.pageCount) {
+            $("a[data-js='page-next']").addClass('disabled');
+          }
+        }
+
+        // function disabledJudge() {
+        //   if($('.disabled').length) {
+        //     ;
+        //   } else { 
+        //     exeAjax();
+        //   }
+        // }
 
       });
       // 楽天ブックスの総合検索APIを使って製作してください。
