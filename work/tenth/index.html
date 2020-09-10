@@ -32,39 +32,50 @@
         var searchword = ''; //グローバル変数
         var pageNum = 0; //グローバル変数
 
+        //検索ボタンクリック
         $('.search__btn').on('click', function() { /*search__btnクラスのbuttonタグがクリックされたらイベント発生*/
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
-          pageNum = countUp(); /*pageNum変数にpageCount関数*/
-          console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
-          exeAjax(); /*exeAjax関数実行*/
+           if(searchword === '') { /*searchword変数が空白なら*/
+             var emptyMessage = '<p class=error-message>検索文字が入力されていません。</p>' /*emptyMessage変数にDOMを代入*/
+             $('.message').append(errorMessage); /*messageクラスにerrorMessage変数を追加*/
+           } else {
+              $('.error-message').remove(); //error-message
+              pageNum = countUp(); /*pageNum変数にpageCount関数*/
+              console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
+              exeAjax(); /*exeAjax関数実行*/
+           }
         });
 
+        //動的に追加した「次へ」ボタンクリック
         $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
-          // disabledJudge();
-          // exeAjax(); /*exeAjax関数を実行*/
+          if ($(this).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
+            console.log('テスト1'); /*テスト1をコンソールに表示*/
+          } else { /*それ以外なら*/
+            console.log('テスト2'); /*テスト2をコンソールに表示*/
+            exeAjax(); /*exeAjax関数実行*/
+          }
         });
 
+        //動的に追加した「前へ」ボタンクリック
         $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
-          if ($(this).hasClass('.disabled')) {
+          if ($(this).hasClass('disabled')) {　/*前へボタンがdisabledクラスを持っているなら*/
             console.log('テスト1');
           } else {
             console.log('テスト2');
             exeAjax();
           }
-          // disabledJudge();
-          // exeAjax();
         });
 
         function countUp() {/*countUp関数の定義*/
@@ -92,11 +103,16 @@
             page: pageNum /*ページの数を指定*/
           },
         }).done(function(data) {
+          if(data.hits === 0){ /*dataオブジェクトのキーであるhitsの値が0なら*/
+            var noresultMessage = '<p class=error-message>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>'
+            $('.message').append(noresultMessage);
+          } else {
+            $('.error-message').remove();
             $.each(data.Items,function(index, value) { /*data変数の中のItemsキーの値である配列のループ処理*/
               console.log(data);
-              var searchresult = '<li class=' + "lists__item" + '>' +
+              var searchresult = '<li class=' + "lists__item" + '>' +　/*searchresult変数にDOMを代入*/
                                   '<div class=' + "lists__item__inner" + '>' +
-                                    '<a href=""' + 'class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
+                                    '<a href=' + data.Items[index].Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
                                       '<img src=' + data.Items[index].Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +　/*largeUrlキーの値を格納*/
                                       '<p class=' + "lists__item__detail" + '>' + '作品名：' + data.Items[index].Item.title + '</p>' +　/*titleキーの値を格納*/
                                       '<p class=' + "lists__item__detail" + '>' + '作者名：' + data.Items[index].Item.author + '</p>' +　/*authorキーの値を格納*/
@@ -107,11 +123,16 @@
               $('.lists').append(searchresult); /*listsクラスをセレクタとしてsearchresult変数を追加*/
             });
             pagerCreate(data); 
-          });
+          }
+          }).fail(function() {
+            var networkError = '<p class=error-message>データ通信ができませんでした。<br>ネットワーク接続を確認して下さい。</p>'
+            $('.message').append(networkError);
+          })
         };
 
+        //ページャーを作成する関数
         function pagerCreate(data) {
-          var pager = '<div class="pager" data-js="pager">' +
+          var pager = '<div class="pager" data-js="pager">' +　
                         '<div class="counter">' +
                             '<span class="counter-current">' + data.page + '</span>' + '/' + '<span class="counter-all">' + data.pageCount + '</span>' +
                         '</div>' +
@@ -121,26 +142,18 @@
                         '</div>' +
                       '</div>'
           $('.lists').after(pager);
-          addDisabled(data);               
+          addDisabled(data); /*addDisabled関数をdata変数を引数に渡して実行*/               
         };
 
+        //disabledクラスを付与する関数
         function addDisabled(data) {
-          if(data.page === 1) {
-            $("a[data-js='page-prev']").addClass('disabled');
+          if(data.page === 1) { /*pageキーの値が1なら*/
+            $("a[data-js='page-prev']").addClass('disabled'); /*「前へ」ボタンにdisabledクラスを付与*/
           }
-          else if(data.page === data.pageCount) {
-            $("a[data-js='page-next']").addClass('disabled');
+          else if(data.page === data.pageCount) { /*pageキーの値とpageCountキーの値が一致しているなら*/
+            $("a[data-js='page-next']").addClass('disabled');　/*「次へ」ボタンにdisabledクラスを付与*/
           }
         }
-
-        // function disabledJudge() {
-        //   if($('.disabled').length) {
-        //     ;
-        //   } else { 
-        //     exeAjax();
-        //   }
-        // }
-
       });
       // 楽天ブックスの総合検索APIを使って製作してください。
       // answerの挙動を良く見てね！
