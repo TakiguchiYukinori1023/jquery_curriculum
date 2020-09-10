@@ -58,8 +58,9 @@
           event.preventDefault(); /*画面遷移を防ぐ*/
           pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
           if ($(this).hasClass('.disabled')) {
-            ;
+            console.log('テスト1');
           } else {
+            console.log('テスト2');
             exeAjax();
           }
           // disabledJudge();
