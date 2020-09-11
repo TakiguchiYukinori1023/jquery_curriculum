@@ -41,7 +41,10 @@
              var emptyMessage = '<p class=error-message>検索文字が入力されていません。</p>' /*emptyMessage変数にDOMを代入*/
              $('.message').append(errorMessage); /*messageクラスにerrorMessage変数を追加*/
            } else {
-              $('.error-message').remove(); //error-message
+              $('.error-message').remove(); //error-messageクラスをセレクタとしてremoveメソッドを使用する
+              $('.search__text__input').change(function(){ /*テキストボックスの値が変更されたら*/
+                pageNum = 0; /*pageNum変数の中身を0にする*/
+              })
               pageNum = countUp(); /*pageNum変数にpageCount関数*/
               console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
               exeAjax(); /*exeAjax関数実行*/
@@ -50,30 +53,34 @@
 
         //動的に追加した「次へ」ボタンクリック
         $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
-          console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-          $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           event.preventDefault(); /*画面遷移を防ぐ*/
-          pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
+          console.log("テスト"); /*テストという文字列をコンソールに表示*/
+
           if ($(this).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
             console.log('テスト1'); /*テスト1をコンソールに表示*/
+            event.preventDefault(); /*画面遷移を防ぐ*/
           } else { /*それ以外なら*/
             console.log('テスト2'); /*テスト2をコンソールに表示*/
+            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
+            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+            pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
             exeAjax(); /*exeAjax関数実行*/
           }
         });
 
         //動的に追加した「前へ」ボタンクリック
         $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
+          event.preventDefault();
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-          $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-          event.preventDefault(); /*画面遷移を防ぐ*/
-          pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
+          
           if ($(this).hasClass('disabled')) {　/*前へボタンがdisabledクラスを持っているなら*/
             console.log('テスト1');
+            event.preventDefault(); /*画面遷移を防ぐ*/
           } else {
             console.log('テスト2');
+            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
+            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+            pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
             exeAjax();
           }
         });
@@ -102,7 +109,7 @@
             hits: '20', /*1ページあたりの表示件数を20件に指定*/
             page: pageNum /*ページの数を指定*/
           },
-        }).done(function(data) {
+        }).done(function(data) { /*ajax通信成功*/
           if(data.hits === 0){ /*dataオブジェクトのキーであるhitsの値が0なら*/
             var noresultMessage = '<p class=error-message>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>'
             $('.message').append(noresultMessage);
@@ -122,9 +129,9 @@
                                  '</li>';
               $('.lists').append(searchresult); /*listsクラスをセレクタとしてsearchresult変数を追加*/
             });
-            pagerCreate(data); 
+            pagerCreate(data); /*引数にdata変数を渡してpagerCreate関数を実行*/
           }
-          }).fail(function() {
+          }).fail(function() { /*ajax通信失敗*/
             var networkError = '<p class=error-message>データ通信ができませんでした。<br>ネットワーク接続を確認して下さい。</p>'
             $('.message').append(networkError);
           })
