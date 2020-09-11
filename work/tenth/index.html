@@ -37,7 +37,12 @@
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
-              exeAjax(); /*exeAjax関数実行*/
+          $('.search__text__input').change(function(){ /*テキストボックスの値が変更されたら*/
+              pageNum = 0; /*pageNum変数の中身を0にする*/
+          })
+          pageNum = countUp(); /*pageNum変数にpageCount関数*/
+          console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
+          exeAjax(); /*exeAjax関数実行*/
           //  if(searchword === '') { /*searchword変数が空白なら*/
           //    var emptyMessage = '<p class=error-message>検索文字が入力されていません。</p>' /*emptyMessage変数にDOMを代入*/
           //    $('.message').append(emptyMessage); /*messageクラスにerrorMessage変数を追加*/
