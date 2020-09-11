@@ -42,66 +42,43 @@
           })
           pageNum = countUp(); /*pageNum変数にpageCount関数*/
           console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
-          exeAjax(); /*exeAjax関数実行*/
-          //  if(searchword === '') { /*searchword変数が空白なら*/
-          //    var emptyMessage = '<p class=error-message>検索文字が入力されていません。</p>' /*emptyMessage変数にDOMを代入*/
-          //    $('.message').append(emptyMessage); /*messageクラスにerrorMessage変数を追加*/
-          //  } else {
-          //     $('.error-message').remove(); //error-messageクラスをセレクタとしてremoveメソッドを使用する
-          //     $('.search__text__input').change(function(){ /*テキストボックスの値が変更されたら*/
-          //       pageNum = 0; /*pageNum変数の中身を0にする*/
-          //     })
-          //     pageNum = countUp(); /*pageNum変数にpageCount関数*/
-          //     console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
-          //     exeAjax(); /*exeAjax関数実行*/
-          //  }
+          exeAjax(searchword); /*exeAjax関数実行*/
         });
 
         //動的に追加した「次へ」ボタンクリック
         $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-
-          if ($(this).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
-            console.log('テスト1'); /*テスト1をコンソールに表示*/
-            event.preventDefault(); /*画面遷移を防ぐ*/
-          } else { /*それ以外なら*/
-            console.log('テスト2'); /*テスト2をコンソールに表示*/
-            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-            pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
-            exeAjax(); /*exeAjax関数実行*/
-          }
+          var nextButton = $("a[data-js='page-next']")
+          disabledJudge(nextButton);
+          pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
+          exeAjax(); /*exeAjax関数実行*/
         });
 
         //動的に追加した「前へ」ボタンクリック
         $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
-          event.preventDefault();
+          event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-
-          if ($(this).hasClass('disabled')) {　/*前へボタンがdisabledクラスを持っているなら*/
-            console.log('テスト1');
-            event.preventDefault(); /*画面遷移を防ぐ*/
-          } else {
-            console.log('テスト2');
-            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-            pageNum = countDown(); /*pageNum変数にcountDown関数の結果を代入*/
-            exeAjax();
-          }
+          var prevButton = $("a[data-js='page-prev']")
+          disabledJudge(prevButton);
+          pageNum = countDown(); /*pageNum変数にcountUp関数の結果を代入*/
+          exeAjax(); /*exeAjax関数実行*/
         });
 
+        //ページを1ずつ増やす関数
         function countUp() {/*countUp関数の定義*/
           pageNum = pageNum + 1; /*現在のpageNum変数に1を足す*/
           return pageNum;　/*pageNum変数の中身を返す*/
         }
 
+        //ページを1ずつ減らす関数
         function countDown() { /*countDown関数の定義*/
           pageNum = pageNum - 1; /*現在のpageNum変数から1引く*/
           return pageNum;　/*pageNum変数の中身を返す*/
         }
 
-        function exeAjax() { /*ajax通信の関数*/
+        //ajax通信をする関数
+        function exeAjax(searchword) { 
           console.log(searchword);　
           $.ajax({
           url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
@@ -116,6 +93,16 @@
             page: pageNum /*ページの数を指定*/
           },
         }).done(function(data) { /*ajax通信成功*/
+            console.log(data);
+            successProcess(data);
+        }).fail(function(error) { /*ajax通信失敗*/
+            console.log(error);
+            errorProcess(error);
+          });
+        };
+
+        //ajax通信成功時の処理関数
+        function successProcess(data) { 
           if(data.hits === 0){ /*dataオブジェクトのキーであるhitsの値が0なら*/
             var noresultMessage = '<p class=error-message>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>'
             $('.message').append(noresultMessage);
@@ -137,30 +124,32 @@
             });
             pagerCreate(data); /*引数にdata変数を渡してpagerCreate関数を実行*/
           }
-          }).fail(function(error) { /*ajax通信失敗*/
-            console.log(error);
-            $('.error-message').remove();
-            if (error.status === 400) { 
-              var keywordError = '<p class=error-message>検索ワードが正しくありません。<br>再度入力し直してください。</p>'
-              $('.message').append(keywordError);
-            }
-            else if (error.status === 404) {
-              var nodataError = '<p class=error-message>対象のデータが存在しません。<br>検索ワードを変更してください。</p>'
-              $('.message').append(nodataError);
-            }
-            else if (error.status === 429) {
-              var overequestError = '<p class=error-message>リクエスト過多です。<br>しばらく時間を空けてから、ご利用ください。</p>'
-              $('.message').append(overequestError);
-            }
-            else if (error.status === 500) {
-              var systemError = '<p class=error-message>システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。</p>'
-              $('.message').append(systemError);
-            }
-            else if (error.ststus = 503) {
-              var maintenanceError = '<p class=error-message>ただいまメンテナンスのため一時サービスを停止しております。<br>大変ご不便をおかけいたしますが、今しばらくお待ちください。</p>'
-              $('.message').append(maintenanceError);
-            }
-          })
+        }
+
+        //ajax通信失敗時のエラー処理関数
+        function errorProcess(error) { 
+          $('.error-message').remove();
+          var errorText = ""; 
+
+          if (error.status === 400) { 
+            errorText = '<p class=error-message>検索ワードが正しくありません。<br>再度入力し直してください。</p>'
+          }
+          else if (error.status === 404) {
+            errorText = '<p class=error-message>対象のデータが存在しません。<br>検索ワードを変更してください。</p>'
+          }
+          else if (error.status === 429) {
+            errorText = '<p class=error-message>リクエスト過多です。<br>しばらく時間を空けてから、ご利用ください。</p>'
+          }
+          else if (error.status === 500) {
+            errorText = '<p class=error-message>システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。</p>'
+          }
+          else if (error.ststus = 503) {
+            errorText = '<p class=error-message>ただいまメンテナンスのため一時サービスを停止しております。<br>大変ご不便をおかけいたしますが、今しばらくお待ちください。</p>'
+          }
+          else if (error.status = 100) {
+            errorText = '<p class=error-message>ネットワークに接続されていません。<br>インターネット接続をご確認ください。</p>'  
+          }
+          $('.message').append(errorText);
         };
 
         //ページャーを作成する関数
@@ -187,7 +176,21 @@
             $("a[data-js='page-next']").addClass('disabled');　/*「次へ」ボタンにdisabledクラスを付与*/
           }
         }
+
+        //disabledクラスの有無による条件分岐関数
+        function disabledJudge(button) { 
+          if ($(button).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
+            console.log('テスト1'); /*テスト1をコンソールに表示*/
+            event.preventDefault(); /*画面遷移を防ぐ*/
+          } else { /*それ以外なら*/
+            console.log('テスト2'); /*テスト2をコンソールに表示*/
+            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
+            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+          }
+        }
+
       });
+
       // 楽天ブックスの総合検索APIを使って製作してください。
       // answerの挙動を良く見てね！
       
