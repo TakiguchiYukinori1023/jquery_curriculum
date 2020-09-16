@@ -49,20 +49,16 @@
         $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          var nextButton = $("a[data-js='page-next']")
-          disabledJudge(nextButton);
-          pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
-          exeAjax(); /*exeAjax関数実行*/
+          var nextButton = "a[data-js='page-next']"; /*nextButton変数に次へボタンを代入*/
+          disabledJudge(nextButton); /*disabledJudge関数にnextButton引数を渡して実行*/
         });
 
         //動的に追加した「前へ」ボタンクリック
         $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          var prevButton = $("a[data-js='page-prev']")
-          disabledJudge(prevButton);
-          pageNum = countDown(); /*pageNum変数にcountUp関数の結果を代入*/
-          exeAjax(); /*exeAjax関数実行*/
+          var prevButton = "a[data-js='page-prev']"; /*nprevButton変数に前へボタンを代入*/
+          disabledJudge(prevButton);　/*disabledJudge関数にprevButton引数を渡して実行*/
         });
 
         //ページを1ずつ増やす関数
@@ -126,7 +122,10 @@
           $('.error-message').remove();
           var errorText = ""; 
 
-          if (error.status === 400) { 
+          if (error.status === 100) {
+            errorText = '<p class=error-message>ネットワークに接続されていません。<br>インターネット接続をご確認ください。</p>'
+          }
+          else if (error.status === 400) { 
             errorText = '<p class=error-message>検索ワードが正しくありません。<br>再度入力し直してください。</p>'
           }
           else if (error.status === 404) {
@@ -139,7 +138,7 @@
             errorText = '<p class=error-message>システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。</p>'
           }
           else if (error.ststus = 503) {
-            errorText = '<p class=error-message>ネットワークに接続されていません。<br>インターネット接続をご確認ください。</p>'
+            errorText = '<p class=error-message>ただいまメンテナンス中です。<br>ご不便をおかけしますが、しばらくお待ちください。</p>'
           }
           $('.message').append(errorText);
         };
@@ -161,7 +160,11 @@
 
         //disabledクラスを付与する関数
         function addDisabled(data) {
-          if(data.page === 1) { /*pageキーの値が1なら*/
+          if(data.page === 1 && data.pageCount === 1) { /*現在のページとページ総数が共に1だったら*/
+            $("a[data-js='page-prev']").addClass('disabled'); /*「前へ」ボタンにdisabledクラスを付与*/
+            $("a[data-js='page-next']").addClass('disabled'); /*「次へ」ボタンにdisabledクラスを付与*/
+          }
+          else if(data.page === 1) { /*pageキーの値が1なら*/
             $("a[data-js='page-prev']").addClass('disabled'); /*「前へ」ボタンにdisabledクラスを付与*/
           }
           else if(data.page === data.pageCount) { /*pageキーの値とpageCountキーの値が一致しているなら*/
@@ -174,11 +177,22 @@
           if ($(button).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
             console.log('テスト1'); /*テスト1をコンソールに表示*/
             event.preventDefault(); /*画面遷移を防ぐ*/
-          } else { /*それ以外なら*/
+          } 
+          else if (button === "a[data-js='page-next']") { 
             console.log('テスト2'); /*テスト2をコンソールに表示*/
             $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
             $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+            pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
+            exeAjax(searchword); /*exeAjax関数実行*/
           }
+          else if (button === "a[data-js='page-prev']") { 
+            console.log('テスト3'); /*テスト3をコンソールに表示*/
+            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
+            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+            pageNum = countDown(); /*pageNum変数にcountUp関数の結果を代入*/
+            exeAjax(searchword); /*exeAjax関数実行*/
+          }
+          
         }
 
       });
