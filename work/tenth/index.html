@@ -33,7 +33,7 @@
         var pageNum = 0; //グローバル変数
 
         //検索ボタンクリック
-        $('.search__btn').on('click', function() { /*search__btnクラスのbuttonタグがクリックされたらイベント発生*/
+        $('.search__btn').on('click', function() { /*search__btnクラスをセレクタとしてonメソッドを使用してクリックイベントを記述*/
           $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
           $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
           searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
@@ -103,10 +103,6 @@
 
         //ajax通信成功時の処理関数
         function successProcess(data) { 
-          if(data.hits === 0){ /*dataオブジェクトのキーであるhitsの値が0なら*/
-            var noresultMessage = '<p class=error-message>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>'
-            $('.message').append(noresultMessage);
-          } else {
             $('.error-message').remove();
             $.each(data.Items,function(index, value) { /*data変数の中のItemsキーの値である配列のループ処理*/
               console.log(data);
@@ -123,7 +119,6 @@
               $('.lists').append(searchresult); /*listsクラスをセレクタとしてsearchresult変数を追加*/
             });
             pagerCreate(data); /*引数にdata変数を渡してpagerCreate関数を実行*/
-          }
         }
 
         //ajax通信失敗時のエラー処理関数
@@ -144,10 +139,7 @@
             errorText = '<p class=error-message>システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。</p>'
           }
           else if (error.ststus = 503) {
-            errorText = '<p class=error-message>ただいまメンテナンスのため一時サービスを停止しております。<br>大変ご不便をおかけいたしますが、今しばらくお待ちください。</p>'
-          }
-          else if (error.status = 100) {
-            errorText = '<p class=error-message>ネットワークに接続されていません。<br>インターネット接続をご確認ください。</p>'  
+            errorText = '<p class=error-message>ネットワークに接続されていません。<br>インターネット接続をご確認ください。</p>'
           }
           $('.message').append(errorText);
         };
