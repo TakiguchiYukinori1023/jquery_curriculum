@@ -93,10 +93,10 @@
 
         //ajax通信成功時の処理関数
         function successProcess(data) { 
-          var searchresult = '';
+          var searchresult = [];
           $('.error-message').remove();
           $.each(data.Items, function(index, value) { 
-            searchresult = '<li class=' + "lists__item" + '>' +　
+            searchresult[index] = '<li class=' + "lists__item" + '>' +　
                                   '<div class=' + "lists__item__inner" + '>' +
                                     '<a href=' + value.Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
                                       '<img src=' + value.Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +　
@@ -107,6 +107,7 @@
                                   '</div>' +
                                  '</li>';
           });
+          console.log(searchresult);
           $('.lists').append(searchresult); 
           pagerCreate(data); 
         }
