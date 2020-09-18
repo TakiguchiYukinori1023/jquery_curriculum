@@ -34,13 +34,9 @@
 
         //検索ボタンクリック
         $('.search__btn').on('click', function() { /*search__btnクラスをセレクタとしてonメソッドを使用してクリックイベントを記述*/
-          $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-          $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+          emptyContents();
           searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
-          $('.search__text__input').change(function(){ /*テキストボックスの値が変更されたら*/
-              pageNum = 0; /*pageNum変数の中身を0にする*/
-          })
-          pageNum = countUp(); /*pageNum変数にpageCount関数*/
+          pageNum = 1; /*pageNum変数の中身を0にする*/
           console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
           exeAjax(searchword); /*exeAjax関数実行*/
         });
@@ -49,28 +45,38 @@
         $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          var nextButton = "a[data-js='page-next']"; /*nextButton変数に次へボタンを代入*/
-          disabledJudge(nextButton); /*disabledJudge関数にnextButton引数を渡して実行*/
+          if ($(this).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
+            console.log('テスト'); /*テストをコンソールに表示*/
+            event.preventDefault(); /*画面遷移を防ぐ*/
+          }
+          else {
+            console.log('テスト'); /*テストをコンソールに表示*/
+            emptyContents(); /*emptyContents関数実行*/
+            pageNum++; /*pageNum変数の値を1ずつプラスする*/
+            exeAjax(searchword); /*exeAjax関数実行*/
+          }
         });
 
         //動的に追加した「前へ」ボタンクリック
         $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
           event.preventDefault(); /*画面遷移を防ぐ*/
           console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          var prevButton = "a[data-js='page-prev']"; /*nprevButton変数に前へボタンを代入*/
-          disabledJudge(prevButton);　/*disabledJudge関数にprevButton引数を渡して実行*/
+          if ($(this).hasClass('disabled')) { 
+            console.log('テスト'); /*テストをコンソールに表示*/
+            event.preventDefault(); /*画面遷移を防ぐ*/
+          }
+          else {   
+            console.log('テスト'); /*テストをコンソールに表示*/
+            emptyContents(); /*emptyContents関数実行*/
+            pageNum--; /*pageNum変数の値を1ずつマイナスする*/
+            exeAjax(searchword); /*exeAjax関数実行*/
+          }
         });
 
-        //ページを1ずつ増やす関数
-        function countUp() {/*countUp関数の定義*/
-          pageNum = pageNum + 1; /*現在のpageNum変数に1を足す*/
-          return pageNum;　/*pageNum変数の中身を返す*/
-        }
-
-        //ページを1ずつ減らす関数
-        function countDown() { /*countDown関数の定義*/
-          pageNum = pageNum - 1; /*現在のpageNum変数から1引く*/
-          return pageNum;　/*pageNum変数の中身を返す*/
+        //商品情報を空にしてページャを取り除く関数
+        function emptyContents() {
+          $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
+          $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
         }
 
         //ajax通信をする関数
@@ -89,8 +95,15 @@
             page: pageNum /*ページの数を指定*/
           },
         }).done(function(data) { /*ajax通信成功*/
+          $('.error-message').remove();
             console.log(data);
-            successProcess(data);
+            if (data.hits === 0) {
+              var noResult = '<p class=error-message>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>'
+              $('.message').append(noResult);
+            }
+            else { 
+              successProcess(data);
+            }
         }).fail(function(error) { /*ajax通信失敗*/
             console.log(error);
             errorProcess(error);
@@ -122,8 +135,8 @@
           $('.error-message').remove();
           var errorText = ""; 
 
-          if (error.status === 100) {
-            errorText = '<p class=error-message>ネットワークに接続されていません。<br>インターネット接続をご確認ください。</p>'
+          if (error.statusText === 'error') {
+            errorText = '<p class=error-message>通信に失敗しました。インターネットの接続をご確認ください。</p>'
           }
           else if (error.status === 400) { 
             errorText = '<p class=error-message>検索ワードが正しくありません。<br>再度入力し直してください。</p>'
@@ -132,12 +145,12 @@
             errorText = '<p class=error-message>対象のデータが存在しません。<br>検索ワードを変更してください。</p>'
           }
           else if (error.status === 429) {
-            errorText = '<p class=error-message>リクエスト過多です。<br>しばらく時間を空けてから、ご利用ください。</p>'
+            errorText = '<p class=error-message>リクエスト過多です。しばらく時間を置いてからお試しください。</p>'
           }
           else if (error.status === 500) {
             errorText = '<p class=error-message>システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。</p>'
           }
-          else if (error.ststus = 503) {
+          else if (error.ststus === 503) {
             errorText = '<p class=error-message>ただいまメンテナンス中です。<br>ご不便をおかけしますが、しばらくお待ちください。</p>'
           }
           $('.message').append(errorText);
@@ -170,29 +183,6 @@
           else if(data.page === data.pageCount) { /*pageキーの値とpageCountキーの値が一致しているなら*/
             $("a[data-js='page-next']").addClass('disabled');　/*「次へ」ボタンにdisabledクラスを付与*/
           }
-        }
-
-        //disabledクラスの有無による条件分岐関数
-        function disabledJudge(button) { 
-          if ($(button).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
-            console.log('テスト1'); /*テスト1をコンソールに表示*/
-            event.preventDefault(); /*画面遷移を防ぐ*/
-          } 
-          else if (button === "a[data-js='page-next']") { 
-            console.log('テスト2'); /*テスト2をコンソールに表示*/
-            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-            pageNum = countUp(); /*pageNum変数にcountUp関数の結果を代入*/
-            exeAjax(searchword); /*exeAjax関数実行*/
-          }
-          else if (button === "a[data-js='page-prev']") { 
-            console.log('テスト3'); /*テスト3をコンソールに表示*/
-            $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-            $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
-            pageNum = countDown(); /*pageNum変数にcountUp関数の結果を代入*/
-            exeAjax(searchword); /*exeAjax関数実行*/
-          }
-          
         }
 
       });
