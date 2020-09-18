@@ -29,129 +29,117 @@
     <script>
 
       $(function() {
-        var searchword = ''; //グローバル変数
-        var pageNum = 0; //グローバル変数
+        var searchword = ''; 
+        var pageNum = 0; 
 
         //検索ボタンクリック
-        $('.search__btn').on('click', function() { /*search__btnクラスをセレクタとしてonメソッドを使用してクリックイベントを記述*/
+        $("[data-js='search-btn']").on('click', function() { 
           emptyContents();
-          searchword = $('.search__text__input').val(); /*search__text__inputクラスのテキストフォームに入力された値を変数searchwordに代入*/
-          pageNum = 1; /*pageNum変数の中身を0にする*/
-          console.log(pageNum); /*pageNum変数の中身をコンソールに表示*/
-          exeAjax(searchword); /*exeAjax関数実行*/
+          searchword = $("[data-js='search-word']").val(); 
+          pageNum = 1; 
+          exeAjax(searchword); 
         });
 
         //動的に追加した「次へ」ボタンクリック
-        $(document).on('click',"a[data-js='page-next']", function(event) { /*動的に生成されたDOM(次へボタン)がクリックされたら*/
-          event.preventDefault(); /*画面遷移を防ぐ*/
-          console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          if ($(this).hasClass('disabled')) { /*次へボタンがdisabledクラスを持っているなら*/
-            console.log('テスト'); /*テストをコンソールに表示*/
-            event.preventDefault(); /*画面遷移を防ぐ*/
-          }
-          else {
-            console.log('テスト'); /*テストをコンソールに表示*/
-            emptyContents(); /*emptyContents関数実行*/
-            pageNum++; /*pageNum変数の値を1ずつプラスする*/
-            exeAjax(searchword); /*exeAjax関数実行*/
-          }
+        $(document).on('click',"a[data-js='page-next']", function(event) { 
+          event.preventDefault(); 
+          if (!$(this).hasClass('disabled')) { 
+            emptyContents(); 
+            pageNum++; 
+            exeAjax(searchword);
+          }    
         });
 
         //動的に追加した「前へ」ボタンクリック
-        $(document).on('click',"a[data-js='page-prev']", function(event) { /*動的に生成されたDOM(前へボタン)がクリックされたら*/
-          event.preventDefault(); /*画面遷移を防ぐ*/
-          console.log("テスト"); /*テストという文字列をコンソールに表示*/
-          if ($(this).hasClass('disabled')) { 
-            console.log('テスト'); /*テストをコンソールに表示*/
-            event.preventDefault(); /*画面遷移を防ぐ*/
-          }
-          else {   
-            console.log('テスト'); /*テストをコンソールに表示*/
-            emptyContents(); /*emptyContents関数実行*/
-            pageNum--; /*pageNum変数の値を1ずつマイナスする*/
-            exeAjax(searchword); /*exeAjax関数実行*/
+        $(document).on('click',"a[data-js='page-prev']", function(event) { 
+          event.preventDefault(); 
+          if (!$(this).hasClass('disabled')) { 
+            emptyContents(); 
+            pageNum--; 
+            exeAjax(searchword); 
           }
         });
 
         //商品情報を空にしてページャを取り除く関数
         function emptyContents() {
-          $('.lists').empty(); /*listsクラスをセレクタとしてemptyメソッドを使用して商品情報を空にする*/
-          $('.pager').remove(); /*pagerクラスをセレクタとしてremoveメソッドを使用してpagerクラスを取り除く*/
+          $('.lists').empty(); 
+          $('.pager').remove(); 
         }
 
         //ajax通信をする関数
         function exeAjax(searchword) { 
-          console.log(searchword);　
           $.ajax({
-          url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-          type: 'GET',
-          datatype: 'json',
-          data: {
-            // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-            keyword: searchword, /*keywordパラメーターの値に検索テキストを代入したsearchwordを指定*/
-            applicationId: '1019399324990976605', /*Idを指定*/
-            booksGenreId: '001', /*検索のジャンルを本に指定*/
-            hits: '20', /*1ページあたりの表示件数を20件に指定*/
-            page: pageNum /*ページの数を指定*/
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+              keyword: searchword, 
+              applicationId: '1019399324990976605', 
+              booksGenreId: '001', 
+              hits: '20', 
+              page: pageNum 
           },
         }).done(function(data) { /*ajax通信成功*/
           $('.error-message').remove();
-            console.log(data);
             if (data.hits === 0) {
-              var noResult = '<p class=error-message>検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>'
+              var noResult = errorMessage('検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。');
               $('.message').append(noResult);
-            }
-            else { 
+            } else { 
               successProcess(data);
             }
         }).fail(function(error) { /*ajax通信失敗*/
-            console.log(error);
             errorProcess(error);
           });
         };
 
         //ajax通信成功時の処理関数
         function successProcess(data) { 
-            $('.error-message').remove();
-            $.each(data.Items,function(index, value) { /*data変数の中のItemsキーの値である配列のループ処理*/
-              console.log(data);
-              var searchresult = '<li class=' + "lists__item" + '>' +　/*searchresult変数にDOMを代入*/
+          $('.error-message').remove();
+          $.each(data.Items,function(index, value) { 
+            var searchresult = '<li class=' + "lists__item" + '>' +　
                                   '<div class=' + "lists__item__inner" + '>' +
-                                    '<a href=' + data.Items[index].Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
-                                      '<img src=' + data.Items[index].Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +　/*largeUrlキーの値を格納*/
-                                      '<p class=' + "lists__item__detail" + '>' + '作品名：' + data.Items[index].Item.title + '</p>' +　/*titleキーの値を格納*/
-                                      '<p class=' + "lists__item__detail" + '>' + '作者名：' + data.Items[index].Item.author + '</p>' +　/*authorキーの値を格納*/
-                                      '<p class=' + "lists__item__detail" + '>' + '出版社：' + data.Items[index].Item.publisherName + '</p>' +　/*publisherNameキーの値を格納*/
+                                    '<a href=' + value.Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
+                                      '<img src=' + value.Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +　
+                                      '<p class=' + "lists__item__detail" + '>' + '作品名：' + value.Item.title + '</p>' +　
+                                      '<p class=' + "lists__item__detail" + '>' + '作者名：' + value.Item.author + '</p>' +　
+                                      '<p class=' + "lists__item__detail" + '>' + '出版社：' + value.Item.publisherName + '</p>' +　
                                     '</a>' +
                                   '</div>' +
                                  '</li>';
-              $('.lists').append(searchresult); /*listsクラスをセレクタとしてsearchresult変数を追加*/
-            });
-            pagerCreate(data); /*引数にdata変数を渡してpagerCreate関数を実行*/
+          $('.lists').append(searchresult); 
+          });
+          pagerCreate(data); 
         }
 
         //ajax通信失敗時のエラー処理関数
         function errorProcess(error) { 
           $('.error-message').remove();
-          var errorText = ""; 
+          var errorText = ''; 
 
-          if (error.statusText === 'error') {
-            errorText = '<p class=error-message>通信に失敗しました。インターネットの接続をご確認ください。</p>'
-          }
-          else if (error.status === 400) { 
-            errorText = '<p class=error-message>検索ワードが正しくありません。<br>再度入力し直してください。</p>'
-          }
-          else if (error.status === 404) {
-            errorText = '<p class=error-message>対象のデータが存在しません。<br>検索ワードを変更してください。</p>'
-          }
-          else if (error.status === 429) {
-            errorText = '<p class=error-message>リクエスト過多です。しばらく時間を置いてからお試しください。</p>'
-          }
-          else if (error.status === 500) {
-            errorText = '<p class=error-message>システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。</p>'
-          }
-          else if (error.ststus === 503) {
-            errorText = '<p class=error-message>ただいまメンテナンス中です。<br>ご不便をおかけしますが、しばらくお待ちください。</p>'
+          switch (error.status) {
+            case 0:
+              errorText = errorMessage('通信に失敗しました。インターネットの接続をご確認ください。');
+              break;
+          
+            case 400:
+              errorText = errorMessage('検索ワードが正しくありません。<br>再度入力し直してください。');
+              break;
+          
+            case 404:
+              errorText = errorMessage('対象のデータが存在しません。<br>検索ワードを変更してください。');
+              break;
+
+            case 429:
+              errorText = errorMessage('リクエスト過多です。しばらく時間を置いてからお試しください。');
+              break;
+            
+            case 500:
+              errorText = errorMessage('システムエラー。長時間続くようであれば、<br>こちらよりご問い合わせください。');
+              break;
+
+            case 503:
+              errorText = errorMessage('ただいまメンテナンス中です。<br>ご不便をおかけしますが、しばらくお待ちください。');
+              break;
           }
           $('.message').append(errorText);
         };
@@ -168,21 +156,24 @@
                         '</div>' +
                       '</div>'
           $('.lists').after(pager);
-          addDisabled(data); /*addDisabled関数をdata変数を引数に渡して実行*/               
+          addDisabled(data);               
         };
 
         //disabledクラスを付与する関数
         function addDisabled(data) {
-          if(data.page === 1 && data.pageCount === 1) { /*現在のページとページ総数が共に1だったら*/
-            $("a[data-js='page-prev']").addClass('disabled'); /*「前へ」ボタンにdisabledクラスを付与*/
-            $("a[data-js='page-next']").addClass('disabled'); /*「次へ」ボタンにdisabledクラスを付与*/
+          if(data.page === 1) { 
+            $("a[data-js='page-prev']").addClass('disabled'); 
           }
-          else if(data.page === 1) { /*pageキーの値が1なら*/
-            $("a[data-js='page-prev']").addClass('disabled'); /*「前へ」ボタンにdisabledクラスを付与*/
+          
+          if(data.page === data.pageCount) { 
+            $("a[data-js='page-next']").addClass('disabled');　
           }
-          else if(data.page === data.pageCount) { /*pageキーの値とpageCountキーの値が一致しているなら*/
-            $("a[data-js='page-next']").addClass('disabled');　/*「次へ」ボタンにdisabledクラスを付与*/
-          }
+        }
+
+        //エラーメッセージを作成する関数
+        function errorMessage(text) {
+          errorText = '<p class=error-message>' + text + '</p>';
+          return errorText;
         }
 
       });
