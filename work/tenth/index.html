@@ -93,16 +93,16 @@
 
         //ajax通信成功時の処理関数
         function successProcess(data) { 
-          var searchresult = [];
+          var searchresult = '';
           $('.error-message').remove();
           $.each(data.Items, function(index, value) { 
-            searchresult[index] = '<li class=' + "lists__item" + '>' +　
+            searchresult += '<li class=' + "lists__item" + '>' +
                                   '<div class=' + "lists__item__inner" + '>' +
                                     '<a href=' + value.Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
-                                      '<img src=' + value.Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +　
-                                      '<p class=' + "lists__item__detail" + '>' + '作品名：' + value.Item.title + '</p>' +　
-                                      '<p class=' + "lists__item__detail" + '>' + '作者名：' + value.Item.author + '</p>' +　
-                                      '<p class=' + "lists__item__detail" + '>' + '出版社：' + value.Item.publisherName + '</p>' +　
+                                      '<img src=' + value.Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +
+                                      '<p class=' + "lists__item__detail" + '>' + '作品名：' + value.Item.title + '</p>' +
+                                      '<p class=' + "lists__item__detail" + '>' + '作者名：' + value.Item.author + '</p>' +
+                                      '<p class=' + "lists__item__detail" + '>' + '出版社：' + value.Item.publisherName + '</p>' +
                                     '</a>' +
                                   '</div>' +
                                  '</li>';
@@ -149,7 +149,7 @@
 
         //ページャーを作成する関数
         function pagerCreate(data) {
-          var pager = '<div class="pager" data-js="pager">' +　
+          var pager = '<div class="pager" data-js="pager">' +
                         '<div class="counter">' +
                             '<span class="counter-current">' + data.page + '</span>' + '/' + '<span class="counter-all">' + data.pageCount + '</span>' +
                         '</div>' +
@@ -169,7 +169,7 @@
           }
           
           if(data.page === data.pageCount) { 
-            $("a[data-js='page-next']").addClass('disabled');　
+            $("a[data-js='page-next']").addClass('disabled');
           }
         }
 
