@@ -79,23 +79,24 @@
               hits: '20', 
               page: pageNum 
           },
-        }).done(function(data) { /*ajax通信成功*/
-          if (data.hits === 0) {
-            var noResult = errorMessage('検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。');
-            $('.message').append(noResult);
-          } else { 
+          }).done(function(data) { /*ajax通信成功*/
+            if (data.hits === 0) {
+              var noResult = errorMessage('検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。');
+              $('.message').append(noResult);
+            } else { 
             successProcess(data);
-          }
-        }).fail(function(error) { /*ajax通信失敗*/
+            }
+          }).fail(function(error) { /*ajax通信失敗*/
             errorProcess(error);
           });
         };
 
         //ajax通信成功時の処理関数
         function successProcess(data) { 
+          var searchresult = '';
           $('.error-message').remove();
           $.each(data.Items, function(index, value) { 
-            var searchresult = '<li class=' + "lists__item" + '>' +　
+            searchresult = '<li class=' + "lists__item" + '>' +　
                                   '<div class=' + "lists__item__inner" + '>' +
                                     '<a href=' + value.Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
                                       '<img src=' + value.Item.largeImageUrl + ' class=' + 'lists__item__img' + ' alt=' + '>' +　
@@ -105,8 +106,8 @@
                                     '</a>' +
                                   '</div>' +
                                  '</li>';
-          $('.lists').append(searchresult); 
           });
+          $('.lists').append(searchresult); 
           pagerCreate(data); 
         }
 
