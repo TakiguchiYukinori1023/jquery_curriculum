@@ -41,7 +41,7 @@
         });
 
         //動的に追加した「次へ」ボタンクリック
-        $(document).on('click',"a[data-js='page-next']", function(event) { 
+        $(document).on('click', "a[data-js='page-next']", function(event) { 
           event.preventDefault(); 
           if (!$(this).hasClass('disabled')) { 
             emptyContents(); 
@@ -51,7 +51,7 @@
         });
 
         //動的に追加した「前へ」ボタンクリック
-        $(document).on('click',"a[data-js='page-prev']", function(event) { 
+        $(document).on('click', "a[data-js='page-prev']", function(event) { 
           event.preventDefault(); 
           if (!$(this).hasClass('disabled')) { 
             emptyContents(); 
@@ -80,13 +80,12 @@
               page: pageNum 
           },
         }).done(function(data) { /*ajax通信成功*/
-          $('.error-message').remove();
-            if (data.hits === 0) {
-              var noResult = errorMessage('検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。');
-              $('.message').append(noResult);
-            } else { 
-              successProcess(data);
-            }
+          if (data.hits === 0) {
+            var noResult = errorMessage('検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。');
+            $('.message').append(noResult);
+          } else { 
+            successProcess(data);
+          }
         }).fail(function(error) { /*ajax通信失敗*/
             errorProcess(error);
           });
@@ -95,7 +94,7 @@
         //ajax通信成功時の処理関数
         function successProcess(data) { 
           $('.error-message').remove();
-          $.each(data.Items,function(index, value) { 
+          $.each(data.Items, function(index, value) { 
             var searchresult = '<li class=' + "lists__item" + '>' +　
                                   '<div class=' + "lists__item__inner" + '>' +
                                     '<a href=' + value.Item.itemUrl + ' class=' + "lists__item__link" + 'target=' + '_blank' + '>' +
@@ -140,6 +139,9 @@
             case 503:
               errorText = errorMessage('ただいまメンテナンス中です。<br>ご不便をおかけしますが、しばらくお待ちください。');
               break;
+
+            default:
+              errorText = errorMessage('該当するエラーがありません');
           }
           $('.message').append(errorText);
         };
